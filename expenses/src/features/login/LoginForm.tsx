@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   Box,
   Paper,
@@ -7,8 +8,22 @@ import {
   Button,
 } from '@mui/material';
 import { BASE_URL } from '../../constants/constants';
+import * as jwtDecode from 'jwt-decode';
+import { setUser } from '../../store/userSlice';
+import { useNavigate } from 'react-router';
+
+
+type DecodedToken = {
+  email: string;
+  role: string;
+  exp?: number;
+  id : number;
+};
 
 const LoginCard = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -42,8 +57,6 @@ const LoginCard = () => {
     }
 
     if (valid) {
-      console.log('Logging in:', { email, password });
-      // Add login logic here
       const response = await fetch(`${BASE_URL}/api/user/auth`, {
         method: "post",
         headers: {
@@ -52,10 +65,19 @@ const LoginCard = () => {
         body: JSON.stringify({ email, password })
       })
       if (!response.ok) {
-
+        
       } else {
         const { message } = await response.json();
         localStorage.setItem('token', message)
+        const decoded: DecodedToken = jwtDecode.jwtDecode(message);
+        dispatch(setUser({
+          role: decoded.role,
+          email: decoded.email,
+          userId : decoded.id
+        }));
+        if (decoded.role === 'admin') navigate('/admin/dashboard');
+        else if (decoded.role === 'employee') navigate('/employee/dashboard');
+
       }
 
     }
