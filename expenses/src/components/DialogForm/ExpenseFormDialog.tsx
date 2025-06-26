@@ -1,5 +1,9 @@
 
 import React from 'react';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
 import {
   Dialog,
   DialogTitle,
@@ -51,7 +55,7 @@ const ExpenseFormDialog: React.FC<ExpenseFormDialogProps> = ({
   };
 
   const handleSubmit = () => {
-    if (!formData.amount || !formData.description || !formData.category) {
+    if (!formData.amount || !formData.description || !formData.category || !formData.createdAt) {
       alert('All fields are required');
       return;
     }
@@ -95,6 +99,17 @@ const ExpenseFormDialog: React.FC<ExpenseFormDialogProps> = ({
             ))}
           </Select>
         </FormControl>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Select Date"
+            value={formData.createdAt || null}
+            onChange={(newValue) => {
+              setFormData({ ...formData, createdAt: newValue })}
+          }
+            //renderInput={(params:any) => <TextField fullWidth margin="dense" {...params} />}
+          />
+        </LocalizationProvider>
+
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

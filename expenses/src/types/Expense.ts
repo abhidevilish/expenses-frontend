@@ -4,7 +4,7 @@ export interface Expense {
   description: string;
   //category: number;
   status?: string;
-  createdAt?: Date;
+  createdAt?: Date | null;
   updatedAt?: Date | null;
   user: User;
   category: Category,

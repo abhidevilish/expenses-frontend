@@ -17,7 +17,7 @@ type DecodedToken = {
   email: string;
   role: string;
   exp?: number;
-  id : number;
+  id: number;
 };
 
 const LoginCard = () => {
@@ -28,6 +28,7 @@ const LoginCard = () => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,22 +59,24 @@ const LoginCard = () => {
 
     if (valid) {
       const response = await fetch(`${BASE_URL}/api/user/auth`, {
-        method: "post",
+        method: "POST",
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password })
       })
       if (!response.ok) {
-        
+        let errorMessage = await response.json()
+        setLoginError(errorMessage.message)
       } else {
         const { message } = await response.json();
         localStorage.setItem('token', message)
+        setLoginError('')
         const decoded: DecodedToken = jwtDecode.jwtDecode(message);
         dispatch(setUser({
           role: decoded.role,
           email: decoded.email,
-          userId : decoded.id
+          userId: decoded.id
         }));
         if (decoded.role === 'admin') navigate('/admin/dashboard');
         else if (decoded.role === 'employee') navigate('/employee/dashboard');
@@ -109,7 +112,7 @@ const LoginCard = () => {
           gutterBottom
           sx={{ fontWeight: 'bold', color: '#1976d2' }}
         >
-          Welcome Back
+          Expense Tracker
         </Typography>
 
         <Typography
@@ -118,7 +121,7 @@ const LoginCard = () => {
           gutterBottom
           sx={{ color: 'text.secondary' }}
         >
-          Please log in to continue
+          Log in to continue
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
@@ -148,6 +151,7 @@ const LoginCard = () => {
             type="submit"
             //fullWidth
             variant="contained"
+
             sx={{
               mt: 3,
               py: 1.5,
@@ -161,6 +165,8 @@ const LoginCard = () => {
           >
             Login
           </Button>
+          {loginError ? <p style={{color:"red"}}>{loginError}</p> : ''}
+
         </Box>
       </Paper>
     </Box>

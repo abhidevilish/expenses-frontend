@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Box,
   Container,
   Typography,
   Button,
@@ -16,10 +17,14 @@ import { BASE_URL } from '../../constants/constants';
 import { Category, Expense } from '../../types/Expense';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { logoutUser } from '../../store/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 
 const EmployeeDashboard: React.FC = () => {
+    const navigate = useNavigate();
+  
   const categories: Category[] = [
     {
       id: 1,
@@ -66,11 +71,14 @@ const EmployeeDashboard: React.FC = () => {
 
   const submitExpense = async () => {
     try {
+      console.log(formData)
+      const date = formData.createdAt as Date;
       const data = {
         amount: Number(formData.amount),
         description: formData.description,
         user: formData.user.id,
-        category: formData.categoryId
+        category: formData.categoryId,
+        createdAt: date.setDate(date?.getDate() + 1)
       }
       await fetch(`${BASE_URL}/api/expense`, {
         method: "POST", headers,
@@ -90,15 +98,26 @@ const EmployeeDashboard: React.FC = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setFormData({ user: { id: userId }, amount: 0, description: '', category: { id: 0 } });
+    setFormData({ user: { id: userId }, amount: '', description: '', category: { id: 0 } });
   };
+
+  const handleLogout = () => {
+      localStorage.clear();
+      logoutUser();
+      navigate('/', { replace: true })
+    }
 
   return (
     <Container sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Employee Expense Dashboard
-      </Typography>
-
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h4" gutterBottom>
+          Employee Expense Dashboard
+        </Typography>
+        <Button variant="outlined" color="error" onClick={handleLogout}>
+          Logout
+        </Button>
+      </Box>
+      
       <Button variant="contained" onClick={handleOpen} sx={{ mb: 2 }}>
         Add New Expense
       </Button>
@@ -112,7 +131,7 @@ const EmployeeDashboard: React.FC = () => {
               <TableCell>Amount</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Creation Date</TableCell>
+              <TableCell>Expense Date</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
