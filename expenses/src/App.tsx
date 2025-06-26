@@ -4,24 +4,27 @@ import AdminDashboard from "./features/dashboard/AdminDashboard";
 import AdminRoute from "./components/AdminRoute/AdminRoute";
 import EmployeeRoute from "./components/EmployeeRoute/EmployeeRoute";
 import EmployeeDashboard from "./features/dashboard/EmployeeDashboard";
+import ErrorBoundary from "./components/ErrorBoundary";
 // import './App.css'
 
 const App = () => {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/admin/dashboard" element=
-          {<AdminRoute>
-            < AdminDashboard />
-          </AdminRoute>} />
-          <Route path = "/employee/dashboard" element ={
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/admin/dashboard" element=
+            {<AdminRoute>
+              < AdminDashboard />
+            </AdminRoute>} />
+          <Route path="/employee/dashboard" element={
             <EmployeeRoute>
-              <EmployeeDashboard/>
+              <EmployeeDashboard />
             </EmployeeRoute>
           } />
-      </Routes>
+        </Routes>
+      </ErrorBoundary>
     </Router>
   )
 }

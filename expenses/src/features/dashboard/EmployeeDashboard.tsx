@@ -52,7 +52,7 @@ const EmployeeDashboard: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const userId = useSelector((state: RootState) => state.user.userId)
-
+  
   const [formData, setFormData] = useState<Expense>({
     amount: '',
     description: '',
@@ -92,7 +92,8 @@ const EmployeeDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchExpenses();
+    if(userId)  
+      fetchExpenses();
   }, []);
 
   const handleOpen = () => setOpen(true);

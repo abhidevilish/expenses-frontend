@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, {  useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
   Paper,
@@ -11,6 +11,7 @@ import { BASE_URL } from '../../constants/constants';
 import * as jwtDecode from 'jwt-decode';
 import { setUser } from '../../store/userSlice';
 import { useNavigate } from 'react-router';
+import { RootState } from '../../store/store';
 
 
 type DecodedToken = {
@@ -23,12 +24,16 @@ type DecodedToken = {
 const LoginCard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
-
+  const role = useSelector((state: RootState) => state.user.role)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState('');
+
+
+  if (role == 'admin') navigate('/admin/dashboard',{replace :true})
+  if (role == 'employee') navigate('/employee/dashboard',{replace :true})
 
   const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -78,8 +83,8 @@ const LoginCard = () => {
           email: decoded.email,
           userId: decoded.id
         }));
-        if (decoded.role === 'admin') navigate('/admin/dashboard');
-        else if (decoded.role === 'employee') navigate('/employee/dashboard');
+        if (decoded.role === 'admin') navigate('/admin/dashboard',{replace :true});
+        else if (decoded.role === 'employee') navigate('/employee/dashboard',{replace :true});
 
       }
 
@@ -165,7 +170,7 @@ const LoginCard = () => {
           >
             Login
           </Button>
-          {loginError ? <p style={{color:"red"}}>{loginError}</p> : ''}
+          {loginError ? <p style={{ color: "red" }}>{loginError}</p> : ''}
 
         </Box>
       </Paper>
